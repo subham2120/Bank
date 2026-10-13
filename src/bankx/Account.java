@@ -5,15 +5,12 @@ import java.util.*;
 
 public class Account {
     public enum AccountType {
-        SAVINGS,
-        CURRENT,
-        CHECKING
+        SAVINGS, CURRENT, CHECKING
     }
     private String accountNumber;
     private String holderName;
     private String phoneNumber;
     private BigDecimal balance;
-
     private AccountType accountType;
     public String getAccountNumber() {
         return this.accountNumber;
@@ -24,43 +21,46 @@ public class Account {
     public String getPhoneNumber(){
         return this.phoneNumber;
     }
-
     public Account(String accountNumber,
                    String holderName,
                    String phoneNumber,
                    BigDecimal balance,
                    AccountType accountType ){
+        if(accountNumber ==null || accountNumber.trim().isEmpty()){
+            throw new IllegalArgumentException("Account number cannot be null or blank");
+        }
         this.accountNumber=accountNumber;
         this.holderName=holderName;
+        if(phoneNumber==null || phoneNumber.trim().isEmpty()){
+            throw new IllegalArgumentException("Phone Number cannot be null or blank");
+        }
         this.phoneNumber=phoneNumber;
         if(balance !=null && balance.compareTo(BigDecimal.ZERO)>=0){
             this.balance=balance;
         }else{
-            System.out.println("Enter the the valid amount");
+            throw new IllegalArgumentException("Enter Valid amount ");
         }
-
         this.accountType=accountType;
     }
 
 
     public BigDecimal deposit(BigDecimal amount){
-        if(amount !=null && amount.compareTo(BigDecimal.ZERO)>0){
-            this.balance=this.balance.add(amount);
+        if(amount ==null || amount.compareTo(BigDecimal.ZERO)<=0){
+            throw new IllegalArgumentException("Enter the valid amount Greater than Zero ");
         }
+        this.balance=this.balance.add(amount);
         return this.balance;
     }
 
 
     public BigDecimal withdraw(BigDecimal amount) throws InsufficientBalanceException{
-        if(amount!=null && amount.compareTo(BigDecimal.ZERO)>0){
-            if(this.balance.compareTo(amount)>=0){
-                this.balance=this.balance.subtract(amount);
-            }else {
-                throw new InsufficientBalanceException("Insufficient Balance! Current balance: " + this.balance);
-            }
-        }else{
+        if(amount==null || amount.compareTo(BigDecimal.ZERO)<=0){
             throw  new IllegalArgumentException("Invalid number");
         }
+        if(this.balance.compareTo(amount)<0){
+            throw new InsufficientBalanceException("Insufficient Balance! Current balance: " + this.balance);
+        }
+        this.balance=this.balance.subtract(amount);
         return this.balance;
     }
 
@@ -78,30 +78,33 @@ public class Account {
                 ",accountType=" + accountType +
                 '}';
     }
-
     public  static void  addAccount(Map<String,Account>accountMap,Account account){
         if(accountMap ==null || account==null){
-            System.out.println("Error:Account cannot null");
-            return;
+            throw new IllegalArgumentException("Error:Account cannot null");
         }
-        if (accountMap.containsKey(account.getAccountNumber())){
-            System.out.println("Error:Account number "+account.getAccountNumber()+"account exists");
-        }else{
-            accountMap.put(account.getAccountNumber(), account);
-            System.out.println("success:"+account.getHolderName());
+        String  accountNumber=account.getAccountNumber();
+        if(accountNumber==null || accountNumber.trim().isEmpty()){
+           throw new IllegalArgumentException("Account Number Cannot be null or blank");
         }
+        if (accountMap.containsKey(accountNumber)){
+            throw new IllegalStateException("Error:Account number "+accountNumber+"account exists");
+        }
+        accountMap.put(accountNumber, account);
+        System.out.println("success:"+account.getHolderName()+"register");
     }
 
+
     public static void addPhoneNumber(Set<String> phoneNumbers,String phoneNumber) {
-        if (phoneNumbers==null ||phoneNumber==null) {
-            System.out.println("Error: Phone number cannot be null");
-            return;
+        if (phoneNumbers==null) {
+            throw  new IllegalArgumentException("Phone number cannot be null ");
         }
-        boolean added = phoneNumbers.add(phoneNumber);
-        if (added) {
-            System.out.println("Success: Phone number added");
-        } else {
-            System.out.println("Error: Phone number already exists");
+        if(phoneNumber==null ||phoneNumber.trim().isEmpty()){
+            throw new IllegalArgumentException("phone number cannot be blank");
+        }
+        String cleanPhoneNumber=phoneNumber.trim();
+        boolean added = phoneNumbers.add(cleanPhoneNumber);
+        if (!added) {
+           throw new IllegalArgumentException("Error: Phone number \"" + cleanPhoneNumber + "\" already exists in the system");
         }
     }
 
