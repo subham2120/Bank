@@ -46,7 +46,7 @@ public class Account {
 
     public BigDecimal deposit(BigDecimal amount){
         if(amount ==null || amount.compareTo(BigDecimal.ZERO)<=0){
-            throw new IllegalArgumentException("Enter the valid amount Greater than Zero ");
+            throw new IllegalArgumentException("Enter the valid amount Greater than Zero");
         }
         this.balance=this.balance.add(amount);
         return this.balance;
